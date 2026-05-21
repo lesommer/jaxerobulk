@@ -10,7 +10,7 @@ The project primary objective is to harden Opencode development skills with a re
 ## Contracts
 - **Exposes**: CLI and API inherited from the original https://github.com/brodeau/aerobulk (tag. 1.0.0)
 - **Guarantees**: behavior changes are test-backed; docs track current intent and constraints
-- **Expects**: contributors optimize for correctness with respect to the reference paper, reproducibility, not feature volume.
+- **Expects**: contributors optimize for correctness with respect to the reference implementation, reproducibility, not feature volume.
 
 ## Dependencies
 - **Uses**: JAX ecosystem (`jax`, `equinox`, `lineax`, `optimistix`), `scipy`.
