@@ -1,11 +1,11 @@
 """ECMWF (IFS Cy40r1) bulk algorithm.
 
-Without cool-skin/warm-layer (added in Iteration 5).
+With optional cool-skin/warm-layer parameterizations.
 """
 
 import jax.numpy as jnp
 from jaxerobulk.constants import grav, vkarmn, vkarmn2, Cx_min, rdct_qsat_salt
-from jaxerobulk.thermodynamics import visc_air, one_on_L, ri_bulk, q_sat, z0_from_cd
+from jaxerobulk.thermodynamics import visc_air, one_on_L, ri_bulk, q_sat, z0_from_cd, update_qnsol_tau
 from jaxerobulk.stability import psi_m_ecmwf, psi_h_ecmwf
 from jaxerobulk.first_guess import first_guess_coare
 
@@ -16,10 +16,12 @@ _alpha_H = 0.40
 _alpha_Q = 0.62
 
 
-def turb_ecmwf(zt, zu, T_s, t_zt, q_s, q_zt, U_zu, nb_iter=5):
+def turb_ecmwf(zt, zu, T_s, t_zt, q_s, q_zt, U_zu, nb_iter=5,
+               l_use_cs=False, l_use_wl=False, pQsw=None, prad_lw=None, pslp=None,
+               rdt=3600.0, gdept_1d=1.0, wl_state=None):
     """ECMWF bulk algorithm (IFS Cy40r1).
 
-    Without cool-skin/warm-layer.
+    With optional cool-skin/warm-layer parameterizations.
     """
     zi0 = 1000.0
     Beta0 = 1.0
@@ -58,8 +60,20 @@ def turb_ecmwf(zt, zu, T_s, t_zt, q_s, q_zt, U_zu, nb_iter=5):
     zpsi_h_u = psi_h_ecmwf(zzeta_u)
     zFh = zlog_zu - zlog_z0t - zpsi_h_u + psi_h_ecmwf(zz0t * z1oL)
 
+    zSST = T_s
+    zdT_cs = jnp.zeros_like(T_s)
+    zT_s = T_s
+    zq_s = q_s
+
+    if l_use_wl and wl_state is not None:
+        z_dT_wl = wl_state["dT_wl"]
+        z_Hz_wl = wl_state["Hz_wl"]
+    elif l_use_wl:
+        z_dT_wl = jnp.zeros_like(T_s)
+        z_Hz_wl = jnp.full_like(T_s, 3.0)
+
     for _ in range(nb_iter):
-        zRib = ri_bulk(zu, T_s, t_zu, q_s, q_zu, zUbzu)
+        zRib = ri_bulk(zu, zT_s, t_zu, zq_s, q_zu, zUbzu)
 
         z1oL = zRib * zFm**2 / zFh / zu
         z1oL = jnp.sign(z1oL) * jnp.minimum(jnp.abs(z1oL), 200.0)
@@ -108,8 +122,32 @@ def turb_ecmwf(zt, zu, T_s, t_zt, q_s, q_zt, U_zu, nb_iter=5):
         zFm = zlog_zu - zlog_z0 - zpsi_m_u + zpsi_m_z0
         zFh = zlog_zu - zlog_z0t - zpsi_h_u + zpsi_h_z0t
 
-        zdt = jnp.sign(t_zu - T_s) * jnp.maximum(jnp.abs(t_zu - T_s), 1.0e-9)
-        zdq = jnp.sign(q_zu - q_s) * jnp.maximum(jnp.abs(q_zu - q_s), 1.0e-12)
+        if l_use_cs:
+            from jaxerobulk.skin_ecmwf import cs_ecmwf
+            zQns, zTau, _ = update_qnsol_tau(
+                zu, zT_s, zq_s, t_zu, q_zu, zus, zts, zqs, U_zu, zUbzu, pslp, prad_lw
+            )
+            zdT_cs = cs_ecmwf(pQsw, zQns, zus, zSST)
+            zT_s = zSST + zdT_cs
+            if l_use_wl:
+                zT_s = zT_s + z_dT_wl
+            zq_s = rdct_qsat_salt * q_sat(jnp.maximum(zT_s, 200.0), pslp)
+
+        if l_use_wl:
+            from jaxerobulk.skin_ecmwf import wl_ecmwf
+            zQns, zTau, _ = update_qnsol_tau(
+                zu, zT_s, zq_s, t_zu, q_zu, zus, zts, zqs, U_zu, zUbzu, pslp, prad_lw
+            )
+            z_dT_wl, z_Hz_wl = wl_ecmwf(
+                pQsw, zQns, zus, zSST, z_dT_wl, z_Hz_wl, rdt, gdept_1d
+            )
+            zT_s = zSST + z_dT_wl
+            if l_use_cs:
+                zT_s = zT_s + zdT_cs
+            zq_s = rdct_qsat_salt * q_sat(jnp.maximum(zT_s, 200.0), pslp)
+
+        zdt = jnp.sign(t_zu - zT_s) * jnp.maximum(jnp.abs(t_zu - zT_s), 1.0e-9)
+        zdq = jnp.sign(q_zu - zq_s) * jnp.maximum(jnp.abs(q_zu - zq_s), 1.0e-12)
 
     zFq = zlog_zu - zlog_z0q - zpsi_h_u + zpsi_h_z0q
     Cd = jnp.maximum(vkarmn2 / (zFm**2), Cx_min)
@@ -122,7 +160,7 @@ def turb_ecmwf(zt, zu, T_s, t_zt, q_s, q_zt, U_zu, nb_iter=5):
     ChN = jnp.maximum(ztmp1_neut, Cx_min)
     CeN = jnp.maximum(ztmp1_neut, Cx_min)
 
-    return {
+    result = {
         "Cd": Cd,
         "Ch": Ch,
         "Ce": Ce,
@@ -137,3 +175,17 @@ def turb_ecmwf(zt, zu, T_s, t_zt, q_s, q_zt, U_zu, nb_iter=5):
         "L": jnp.where(jnp.abs(z1oL) > 0, 1.0 / z1oL, 1.0e10),
         "UN10": zus / vkarmn * (zlog_10 - zlog_z0),
     }
+
+    if l_use_cs:
+        result["dT_cs"] = zdT_cs
+        result["T_s"] = zT_s
+        result["q_s"] = zq_s
+
+    if l_use_wl:
+        result["dT_wl"] = z_dT_wl
+        result["Hz_wl"] = z_Hz_wl
+        if "T_s" not in result:
+            result["T_s"] = zT_s
+            result["q_s"] = zq_s
+
+    return result
