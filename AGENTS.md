@@ -1,7 +1,9 @@
 # JaxeroBulk Project Context
 
 ## Purpose
-This repository began as a demonstration during the 2026 general assembly of AI4PEX EU project. The purpose of the project is to port the FORTRAN90-based library Aerobulk (https://github.com/brodeau/aerobulk), which implement aerodynamic bulk formulae used in ocean circulation models, to Python/Jax/Equinox. 
+This repository began as a demonstration during the 2026 general assembly of AI4PEX EU project. 
+
+The purpose of the project is to port the FORTRAN90-based library Aerobulk (https://github.com/brodeau/aerobulk), which implement aerodynamic bulk formulae used in ocean circulation models, to Python/Jax/Equinox. 
 
 The project primary objective is to harden Opencode development skills with a real scientific-computing codebase, testing JAX + Equinox  implementation quality and  Opencode context and directive-writing quality.
 
