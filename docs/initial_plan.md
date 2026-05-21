@@ -7,7 +7,7 @@ The code should implement strictly the algorithm of the FORTRAN90 based implemen
 ## STEPS
 
 1. scan the  FORTRAN implementation of AeroBulk available locally in `../aerobulk/` or online at `https://github.com/brodeau/aerobulk/`
-1. write in `docs/bulk_formulae.md` a desccription of the general formulation of bulk formulae and of the specific version to implemented in AeroBulk (to be implemented in JaxeroBulk)
+1. write in `docs/bulk_formulae.md` a desccription of the general formulation of bulk formulae and of the specific versions (COARE, ECMWF, NCAR, ...) implemented in AeroBulk (and to be implemented in JaxeroBulk).
 1. Prepare and write a plan in  `docs/implementation_plan.md` for a ralph loop. 
 1. Proceed with the plan with a ralph loop with a dedicated branch for each loop. At the end of each iteration the branch should be merged into main. All changes should be commited locally and pushed to the remote GH repos.
 1. At the end of each iteration, before merge, the code should be pip installable, and fonctional, with tests corresponding to the current level of implementation. 
