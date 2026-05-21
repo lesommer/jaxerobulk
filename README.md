@@ -23,23 +23,25 @@ import jax
 import jax.numpy as jnp
 jax.config.update("jax_enable_x64", True)
 
-from jaxerobulk.thermodynamics import q_sat, rho_air, l_vap
+from jaxerobulk.api import aerobulk_model
 
-# Saturation specific humidity at 20°C, 1010 hPa
-qs = q_sat(jnp.float64(293.15), jnp.float64(101000.0))
+result = aerobulk_model(
+    zt=2.0, zu=10.0,
+    sst=jnp.float64(300.0), t_zt=jnp.float64(298.0),
+    hum_zt=jnp.float64(0.018),
+    U_zu=jnp.float64(5.0), V_zu=jnp.float64(0.0),
+    slp=jnp.float64(101000.0),
+    algo="coare3p6",
+)
+print(f"Cd={float(result['Cd']):.6e}  Qlat={float(result['Qlat']):.2f} W/m^2")
 
-# Air density at 20°C, q=0.01 kg/kg, 1010 hPa
-rho = rho_air(jnp.float64(293.15), jnp.float64(0.01), jnp.float64(101000.0))
-
-# Differentiable!
-grad_qs = jax.grad(lambda T: q_sat(T, jnp.float64(101000.0)))(jnp.float64(293.15))
+# Fully differentiable!
+grad_cd = jax.grad(lambda sst: aerobulk_model(2., 10., sst, jnp.float64(298.), jnp.float64(0.018), jnp.float64(5.), jnp.float64(0.), jnp.float64(101000.), "coare3p6")["Cd"])(jnp.float64(300.))
 ```
 
 ## Project Status
 
-See [docs/project_status.md](docs/project_status.md) for detailed implementation progress and differentiability status.
-
-**Iteration 1 (current)**: Constants and core thermodynamic functions — 61 tests passing, all differentiable.
+All 7 iterations complete. See [docs/project_status.md](docs/project_status.md) for detailed progress and differentiability status.
 
 ## Algorithms
 
@@ -54,7 +56,7 @@ See [docs/project_status.md](docs/project_status.md) for detailed implementation
 ## Testing
 
 ```bash
-JAX_ENABLE_X64=True pytest -q
+pytest -q
 ```
 
 ## References
@@ -63,4 +65,4 @@ JAX_ENABLE_X64=True pytest -q
 
 ## License
 
-MIT
+GPL-3.0-or-later (see [LICENSE](LICENSE))
