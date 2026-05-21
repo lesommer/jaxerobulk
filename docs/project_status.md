@@ -4,14 +4,14 @@
 
 ## Current State
 
-Iteration 1 completed. Core thermodynamics and constants are implemented and tested.
+Iterations 1-2 completed. Core thermodynamics, stability functions, and NCAR algorithm are implemented and tested.
 
 ## Implementation Progress
 
 | Iteration | Description | Status |
 |-----------|-------------|--------|
 | 1 | Project scaffolding, constants, core thermodynamics | **Complete** |
-| 2 | Stability functions, NCAR algorithm | Pending |
+| 2 | Stability functions, NCAR algorithm | **Complete** |
 | 3 | COARE 3.0 and COARE 3.6 | Pending |
 | 4 | ECMWF algorithm | Pending |
 | 5 | Cool-skin and warm-layer | Pending |
@@ -24,6 +24,9 @@ Iteration 1 completed. Core thermodynamics and constants are implemented and tes
 |--------|------|--------|-------|---------------|
 | Constants | `constants.py` | Complete | Indirect | N/A |
 | Thermodynamics | `thermodynamics.py` | Complete | 61 passing | Forward + Reverse |
+| Stability | `stability.py` | Complete | 51 passing (incl. NCAR) | Forward + Reverse |
+| First guess | `first_guess.py` | Complete | Included in NCAR tests | Partial |
+| NCAR | `ncar.py` | Complete | 51 passing | Forward + Reverse |
 
 ## Functions Implemented
 
@@ -54,15 +57,30 @@ All physical constants from `mod_const.f90`.
 - `type_of_humidity` — auto-detect humidity type
 - `z0tq_lkb` — Liu-Katsaros-Businger scalar roughness
 
+### stability.py
+- `psi_m_coare`, `psi_h_coare` — COARE 3.0/3.6 stability functions
+- `psi_m_ncar`, `psi_h_ncar` — NCAR stability functions (Paulson + -5z)
+- `psi_m_ecmwf`, `psi_h_ecmwf` — ECMWF stability functions
+- `psi_m_andreas`, `psi_h_andreas` — Andreas stability functions (Grachev et al. 2007 stable)
+
+### first_guess.py
+- `first_guess_coare` — COARE first guess of u*, theta*, q* (shared by COARE and ECMWF)
+
+### ncar.py
+- `cd_n10_ncar` — neutral drag coefficient (L&Y 2008 Eq. 11)
+- `ch_n10_ncar` — neutral sensible heat coefficient
+- `ce_n10_ncar` — neutral evaporation coefficient
+- `turb_ncar` — full NCAR bulk algorithm iteration
+
 ## Differentiability
 
-All thermodynamic functions are differentiable in both forward and reverse mode.
-Verified for key functions:
-- `e_sat`, `q_sat`, `rho_air`, `l_vap`, `visc_air`, `pot_temp`, `virt_temp`
-- `gamma_moist`, `qlw_net`, `one_on_L`, `ri_bulk`, `bulk_formula`
-- Forward/reverse Jacobian consistency checked for `q_sat`
+All thermodynamic and stability functions are differentiable in both forward and reverse mode.
+NCAR `turb_ncar` is differentiable w.r.t. SST and wind speed (verified).
+Forward/reverse Jacobian consistency checked for all stability functions.
 
 ## Known Issues
 
 - `e_air` uses a fixed 20-iteration loop instead of the FORTRAN convergence check
   (needed for JAX compatibility). Accuracy is sufficient for typical inputs.
+- COARE/ECMWF stable psi functions have a small offset at zeta=0 (by design, from
+  the Beljaars-Holtslag formulation with constant 8.525)
