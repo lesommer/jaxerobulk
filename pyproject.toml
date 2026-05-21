@@ -23,6 +23,8 @@ test = [
 
 [project.scripts]
 aerobulk-toy = "jaxerobulk.cli:aerobulk_toy_main"
+aerobulk-compute = "jaxerobulk.cli:main"
+aerobulk-compare = "jaxerobulk.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/jaxerobulk"]

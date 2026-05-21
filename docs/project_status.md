@@ -4,7 +4,7 @@
 
 ## Current State
 
-Iterations 1-5 completed. Core thermodynamics, stability functions, NCAR algorithm, COARE 3.0/3.6, ECMWF, Andreas, high-level API, and cool-skin/warm-layer parameterizations are implemented and tested.
+Iterations 1-7 completed. All algorithms, cool-skin/warm-layer, high-level API, CLI, and comprehensive differentiability are implemented and tested.
 
 ## Implementation Progress
 
@@ -15,8 +15,8 @@ Iterations 1-5 completed. Core thermodynamics, stability functions, NCAR algorit
 | 3 | COARE 3.0 and COARE 3.6 | **Complete** |
 | 4 | ECMWF algorithm, Andreas, high-level API | **Complete** |
 | 5 | Cool-skin and warm-layer | **Complete** |
-| 6 | CLI improvements | Pending |
-| 7 | CLI, comprehensive differentiability | Pending |
+| 6 | Andreas algorithm, high-level API | **Complete** (merged into iter4) |
+| 7 | CLI, comprehensive differentiability | **Complete** |
 
 ## Module Status
 
@@ -33,6 +33,7 @@ Iterations 1-5 completed. Core thermodynamics, stability functions, NCAR algorit
 | API | `api.py` | Complete | Included | Forward + Reverse |
 | Cool-skin COARE | `skin_coare.py` | Complete | 27 passing (CSWL) | Forward + Reverse |
 | Cool-skin ECMWF | `skin_ecmwf.py` | Complete | 27 passing (CSWL) | Forward + Reverse |
+| CLI | `cli.py` | Complete | 8 passing | N/A |
 
 ## Functions Implemented
 
@@ -103,12 +104,20 @@ All physical constants from `mod_const.f90`.
 - Full CSWL support via `l_use_skin`, `rad_sw`, `rad_lw` parameters
 - Warm-layer state management via `wl_state` dict
 
+### cli.py
+- `aerobulk-toy` — interactive single-point exploration with all algorithm options
+- `aerobulk-compare` — cross-algorithm comparison table at a single point
+- `aerobulk-compute` — batch computation from CSV forcing files
+
 ## Differentiability
 
 All thermodynamic and stability functions are differentiable in both forward and reverse mode.
-All bulk algorithms (NCAR, COARE 3.0/3.6, ECMWF, Andreas) are differentiable w.r.t. SST.
+All bulk algorithms (NCAR, COARE 3.0/3.6, ECMWF, Andreas) are differentiable w.r.t. SST, wind speed, and air temperature.
 CSWL parameterizations are differentiable using `jax.custom_jvp` for gradient-safe `sqrt(x) where x > 0` pattern.
 COARE/ECMWF with CSWL enabled are differentiable w.r.t. SST (verified).
+Forward/reverse gradient consistency verified for all algorithms (rtol < 1e-5).
+Gradient magnitudes are physically reasonable (dCd/dSST < 1e-3).
+Full Jacobian computation verified via `jax.jacfwd` for all algorithms.
 
 ## Known Issues
 

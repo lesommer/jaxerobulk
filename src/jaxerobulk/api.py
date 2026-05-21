@@ -131,12 +131,17 @@ def aerobulk_compute(
     supports_cswl = algo in (Algorithm.COARE3P0, Algorithm.COARE3P6, Algorithm.ECMWF)
 
     if l_use_skin and supports_cswl:
-        result = turb_func(
-            zt, zu, sst, t_zt, q_s, q_zt, W_zu, nb_iter=nb_iter,
+        cswl_kwargs = dict(
             l_use_cs=l_use_cs, l_use_wl=l_use_wl,
             pQsw=pQsw, prad_lw=rad_lw, pslp=slp,
-            isecday_utc=isecday_utc, plon=plon, rdt=rdt, gdept_1d=gdept_1d,
-            wl_state=wl_state,
+            rdt=rdt, gdept_1d=gdept_1d, wl_state=wl_state,
+        )
+        if algo in (Algorithm.COARE3P0, Algorithm.COARE3P6):
+            cswl_kwargs["isecday_utc"] = isecday_utc
+            cswl_kwargs["plon"] = plon
+        result = turb_func(
+            zt, zu, sst, t_zt, q_s, q_zt, W_zu, nb_iter=nb_iter,
+            **cswl_kwargs,
         )
     else:
         result = turb_func(zt, zu, sst, t_zt, q_s, q_zt, W_zu, nb_iter=nb_iter)
