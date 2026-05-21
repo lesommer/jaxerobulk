@@ -15,7 +15,7 @@ The project primary objective is to harden Opencode development skills with a re
 ## Dependencies
 - **Uses**: JAX ecosystem (`jax`, `equinox`, `lineax`, `optimistix`), `scipy`.
 - **Used by**: CLI workflows, regression/IO tests, and coding-agent hardening exercises.
-- **Boundary**: runtime code in `src/` should be entirely in python and should not include any compile module from from the original Fortran implementation
+- **Boundary**: runtime code in `src/` should be entirely in python and should not include any compiled module from the original Fortran implementation
 
 ## Invariants
 - `pytest -q` must stay green after behavior changes.
