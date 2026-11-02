@@ -43,4 +43,4 @@ The project primary objective is to harden Opencode development skills with a re
 
 ## Boundaries
 - Safe to edit: `src/`, `tests/`, `docs/`, `README.md`, `AGENTS.md`.
-- Do not copy source text from `AeroBulk` into GNU-licensed runtime code.
+- Do not copy source text from `AeroBulk` into runtime code: AeroBulk is GPL-3.0, and copied text could not be offered under the MIT option of the dual license.

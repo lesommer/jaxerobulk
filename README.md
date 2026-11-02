@@ -65,4 +65,6 @@ pytest -q
 
 ## License
 
-GPL-3.0-or-later (see [LICENSE](LICENSE))
+Dual-licensed under GPL-3.0-or-later or MIT, at your option (see
+[LICENSE](LICENSE), [LICENSE.GPL](LICENSE.GPL) and
+[LICENSE.MIT](LICENSE.MIT)).
