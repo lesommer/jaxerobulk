@@ -20,6 +20,11 @@ test = [
     "pytest>=8.0",
     "pytest-xdist",
 ]
+validation = [
+    "xarray",
+    "netCDF4",
+    "matplotlib",
+]
 
 [project.scripts]
 aerobulk-toy = "jaxerobulk.cli:aerobulk_toy_main"

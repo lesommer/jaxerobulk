@@ -59,6 +59,16 @@ All 7 iterations complete. See [docs/project_status.md](docs/project_status.md) 
 pytest -q
 ```
 
+## External-Reference Validation
+
+`validation/` holds a gated external-reference validation of the
+CORE/NCAR chain against the eORCA1 run of de Lavergne et al. (2026) —
+a CORE.v2-normal-year-forced NEMO 4.2 run whose restart carries the
+model's own surface fluxes. Matched-protocol agreement: qns bias
++1.92 W/m², corr 0.9956 (verdict bar: PASS). The external data is
+never committed; the gated test skips without it. See
+[validation/README.md](validation/README.md).
+
 ## References
 
 - Brodeau, L., B. Barnier, S. Gulev, and C. Woods, 2016: Climatologically significant effects of some approximations in the bulk parameterizations of turbulent air-sea fluxes. J. Phys. Oceanogr., doi:10.1175/JPO-D-16-0169.1.

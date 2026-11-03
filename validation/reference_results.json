@@ -1,0 +1,263 @@
+{
+ "validation": "jaxerobulk CORE/NCAR chain vs eORCA1 TRA year-1001 end",
+ "reference_provenance": {
+  "generated_by": "repro-repo scripts/check_core_fluxes_eorca1.py variant matrix",
+  "repro_commit": "36cf6d3",
+  "jaxerobulk_rev": "a750051",
+  "date": "2026-11-03",
+  "protocol_facts": {
+   "bulk": "NEMO 4.2 sbcblk, ln_NCAR (CORE/NCAR, Large & Yeager)",
+   "records": "time-interp OFF: Dec 31 03/09/15/21 UTC state, day-365 daily radiation, December precip/snow",
+   "wind_remap": "NEMO weights_bicubic + rotation (probe: bilinear, V4 bicubic unrotated)",
+   "qns_convention": "lw(0.98) + sen + lat - snow*rLfus - evap*rcp*SST + rain*rcp*Tair + snow*rcpi*min(Tair,0)",
+   "emp_caveats": "run runoff (DaiTrenberth/Depoorter) and SSS restoring not in record; nn_fwb=1 removed by area-weighted demeaning (E1/E2)",
+   "forcing_lineage": "run used *_CORE2_fill; probe uses GFDL CNYF originals (documented assumption)"
+  }
+ },
+ "run": "eorca1 TRA year-1001 end state (1000-12-31, noleap calendar)",
+ "mask": {
+  "open_water_sst_gt_m1_lat64": 50596,
+  "strict_sst_gt_0.5": 48564
+ },
+ "variants": {
+  "V1 mean of per-record fluxes, 3-term qns": [
+   {
+    "label": "qns (W/m2)",
+    "n": 50596,
+    "bias": 5.167100419882072,
+    "rms": 41.071979628051245,
+    "corr": 0.9464919088387118
+   },
+   {
+    "label": "utau (N/m2)",
+    "n": 50596,
+    "bias": -0.0032146548756409685,
+    "rms": 0.08094875672880127,
+    "corr": 0.834747572449673
+   },
+   {
+    "label": "vtau (N/m2)",
+    "n": 50596,
+    "bias": 0.000311724898249222,
+    "rms": 0.0666035298825276,
+    "corr": 0.8251713264697614
+   },
+   {
+    "label": "emp (kg/m2/s, ours = E - P, model = E - P - R + erp + ice - fwb)",
+    "n": 50596,
+    "bias": 4.7886911254956e-06,
+    "rms": 3.1010664900739884e-05,
+    "corr": 0.7432531413074801
+   }
+  ],
+  "V2 last 6h record, 3-term qns": [
+   {
+    "label": "qns (W/m2)",
+    "n": 50596,
+    "bias": 2.7322971113556402,
+    "rms": 12.765884403494924,
+    "corr": 0.9954277913773145
+   },
+   {
+    "label": "utau (N/m2)",
+    "n": 50596,
+    "bias": -0.0006153711535941581,
+    "rms": 0.020128529190260352,
+    "corr": 0.992210456708868
+   },
+   {
+    "label": "vtau (N/m2)",
+    "n": 50596,
+    "bias": 0.0007334783430879536,
+    "rms": 0.01736714055478942,
+    "corr": 0.9898395036977014
+   },
+   {
+    "label": "emp (kg/m2/s, ours = E - P, model = E - P - R + erp + ice - fwb)",
+    "n": 50596,
+    "bias": 4.7886911254956e-06,
+    "rms": 3.1010664900739884e-05,
+    "corr": 0.7432531413074801
+   }
+  ],
+  "V3 = V2 + NEMO heat-content terms (matched)": [
+   {
+    "label": "qns (W/m2)",
+    "n": 50596,
+    "bias": 1.9224053428188967,
+    "rms": 12.040110279463665,
+    "corr": 0.9955543988135968
+   },
+   {
+    "label": "utau (N/m2)",
+    "n": 50596,
+    "bias": -0.0006153711535941581,
+    "rms": 0.020128529190260352,
+    "corr": 0.992210456708868
+   },
+   {
+    "label": "vtau (N/m2)",
+    "n": 50596,
+    "bias": 0.0007334783430879536,
+    "rms": 0.01736714055478942,
+    "corr": 0.9898395036977014
+   },
+   {
+    "label": "emp (kg/m2/s, ours = E - P, model = E - P - R + erp + ice - fwb)",
+    "n": 50596,
+    "bias": 4.7886911254956e-06,
+    "rms": 3.1010664900739884e-05,
+    "corr": 0.7432531413074801
+   }
+  ],
+  "V4 = V3 + bicubic wind": [
+   {
+    "label": "qns (W/m2)",
+    "n": 50596,
+    "bias": -1.868998663137258,
+    "rms": 11.971022119183345,
+    "corr": 0.995598873662098
+   },
+   {
+    "label": "utau (N/m2)",
+    "n": 50596,
+    "bias": 0.0004062703029222579,
+    "rms": 0.018114820056842694,
+    "corr": 0.9926155438721416
+   },
+   {
+    "label": "vtau (N/m2)",
+    "n": 50596,
+    "bias": 0.00030055076934339884,
+    "rms": 0.0166952644061596,
+    "corr": 0.9896164244018373
+   },
+   {
+    "label": "emp (kg/m2/s, ours = E - P, model = E - P - R + erp + ice - fwb)",
+    "n": 50596,
+    "bias": 4.7886911254956e-06,
+    "rms": 3.1010664900739884e-05,
+    "corr": 0.7432531413074801
+   }
+  ],
+  "V5 = V3, strict ice-margin mask (sst>0.5C)": [
+   {
+    "label": "qns (W/m2)",
+    "n": 48564,
+    "bias": 1.7772453533893142,
+    "rms": 10.377666367597575,
+    "corr": 0.9967667557125375
+   },
+   {
+    "label": "utau (N/m2)",
+    "n": 48564,
+    "bias": -0.0006012426445185636,
+    "rms": 0.019944590511473372,
+    "corr": 0.9924435933793263
+   },
+   {
+    "label": "vtau (N/m2)",
+    "n": 48564,
+    "bias": 0.0007505706237990758,
+    "rms": 0.017236099350726845,
+    "corr": 0.9898951114889896
+   },
+   {
+    "label": "emp (kg/m2/s, ours = E - P, model = E - P - R + erp + ice - fwb)",
+    "n": 48564,
+    "bias": 3.6104097116525444e-06,
+    "rms": 2.325598578313399e-05,
+    "corr": 0.8312736277834937
+   }
+  ],
+  "E1 = emp anomaly-form (fwb correction proxy)": [
+   {
+    "label": "emp anomaly (kg/m2/s)",
+    "n": 50596,
+    "bias": -1.3676631724951573e-05,
+    "rms": 3.355264565172964e-05,
+    "corr": 0.74325314130748
+   }
+  ],
+  "E2 = E1 - CNYF runoff (approximate)": [
+   {
+    "label": "emp anomaly w/ runoff (kg/m2/s)",
+    "n": 50596,
+    "bias": -1.3670626046535287e-05,
+    "rms": 3.823800661954933e-05,
+    "corr": 0.6552802788007104
+   }
+  ],
+  "V0 day-mean inputs, 3-term qns (naive protocol)": [
+   {
+    "label": "qns (W/m2)",
+    "n": 50596,
+    "bias": 12.132625497561873,
+    "rms": 50.03056896750119,
+    "corr": 0.9232951684666346
+   },
+   {
+    "label": "utau (N/m2)",
+    "n": 50596,
+    "bias": -0.0072977697581214935,
+    "rms": 0.09102546271058896,
+    "corr": 0.7882666783353159
+   },
+   {
+    "label": "vtau (N/m2)",
+    "n": 50596,
+    "bias": 0.00011116713721326224,
+    "rms": 0.07522147590540047,
+    "corr": 0.7723700286666985
+   },
+   {
+    "label": "emp (kg/m2/s, ours = E - P, model = E - P - R + erp + ice - fwb)",
+    "n": 50596,
+    "bias": 1.920263912366388e-06,
+    "rms": 3.3827480572102254e-05,
+    "corr": 0.6772008655046167
+   }
+  ]
+ },
+ "regression": {
+  "target": "qns_b - qns_V3 (matched)",
+  "n": 50596,
+  "r2": 0.03581525870204427,
+  "sigma_est": 11.67143963252679,
+  "terms": {
+   "1 (intercept)": {
+    "coef": -2.778249733497628,
+    "stderr": 0.4860000248315633,
+    "t": -5.716562945568794
+   },
+   "LWDN": {
+    "coef": -0.023308523093548972,
+    "stderr": 0.00425897642930608,
+    "t": -5.4727992700693715
+   },
+   "sigma*SST^4": {
+    "coef": 0.028696547832658258,
+    "stderr": 0.004089877640769925,
+    "t": 7.0164807735558785
+   },
+   "|Qlat|": {
+    "coef": -0.020153460152111922,
+    "stderr": 0.0010432129477221813,
+    "t": -19.318644574069264
+   },
+   "|Qsen|": {
+    "coef": -0.030080985945715746,
+    "stderr": 0.00186808986936112,
+    "t": -16.10253684208637
+   }
+  }
+ },
+ "verdict": {
+  "bar_qns_bias_max_abs": 5.0,
+  "bar_qns_corr_min": 0.92,
+  "qns_bias": 1.9224053428188967,
+  "qns_corr": 0.9955543988135968,
+  "pass_bias": true,
+  "pass_corr": true
+ }
+}

@@ -1,5 +1,23 @@
 # JaxeroBulk Project Status
 
+## Last Updated: 2026-11-03
+
+## Reassessment 2026-11-03 — external-reference validation (Gate A)
+
+Added `validation/` (not part of the runtime package): an
+external-reference validation of the CORE/NCAR chain against the
+eORCA1 run of de Lavergne et al. (2026) — a NEMO 4.2 `sbcblk`/`ln_NCAR`
+CORE.v2-normal-year-forced run whose restart carries the model's own
+`qns_b`/`emp_b`/`utau_b`/`vtau_b`. On the matched protocol (last 6-h
+forcing record + NEMO 4.2 heat-content terms, n = 50,596 ice-free
+cells): qns bias +1.92 W/m², rms 12.0 W/m², corr 0.9956; utau/vtau corr
+0.992/0.990; emp (anomaly form) corr 0.743. Verdict bar (|bias| ≤ 5
+W/m², corr ≥ 0.92): PASS. Gated test `tests/test_validation_eorca1.py`
+skips without the external data (env vars `JAXEROBULK_EORCA1_DIR`,
+`JAXEROBULK_CNYF_DIR`); optional dependency extra `validation`
+(xarray + netCDF4). Full protocol, variant matrix and reference numbers:
+`validation/README.md`, `validation/reference_results.json`.
+
 ## Last Updated: 2026-05-21
 
 ## Current State
@@ -17,6 +35,7 @@ Iterations 1-7 completed. All algorithms, cool-skin/warm-layer, high-level API, 
 | 5 | Cool-skin and warm-layer | **Complete** |
 | 6 | Andreas algorithm, high-level API | **Complete** (merged into iter4) |
 | 7 | CLI, comprehensive differentiability | **Complete** |
+| 8 | External-reference validation vs eORCA1 (Gate A) | **Complete** |
 
 ## Module Status
 
